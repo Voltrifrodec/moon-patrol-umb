@@ -32,5 +32,5 @@ def generateStarImage(starAmountMax: int, fileName: str, isPreviewNeeded: bool):
 
 
 #? Generate star images - Testing only!
-for i in range(1,301):
+for i in range(1,31):
     generateStarImage(random.randint(100, 300), 'assets/images/bg_stars-{}.png'.format('0' + (str(i)) if i < 10 else str(i)), False)
