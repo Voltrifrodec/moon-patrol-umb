@@ -1,6 +1,6 @@
 # Moon Patrol UMB
 - Repository for classic game Moon Patrol made by students of UMB.
-- Developers: @VOJAKIS, @Voltrifrodec
+- Developers: [@VOJAKIS](https://github.com/VOJAKIS), [@Voltrifrodec](https://github.com/Voltrifrodec)
 
 
 ## Poznámky
