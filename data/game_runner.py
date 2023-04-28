@@ -1,3 +1,4 @@
+import math
 import pygame
 from sys import exit
 
@@ -51,43 +52,33 @@ class Vehicle:
 		self.isJumping = False
 		self.jumpCount = 10
 
-		self.startPositionXY = (self.rect.x, self.rect.y)
+		self.firstJump = True
+		self.jumpSegment = 0.045
+		self.hranica = 100
+		self.zem = self.rect.y
 
-		self.temp = -1
 	
 	def jump(self):
-		# print(self.rect.top, self.rect.bottom)
-		# print(self.jumpCount, self.isJumping)
-		
-		""" if self.rect.y <= SCREEN_HEIGHT - ground_surface.get_rect().bottom - PLAYER_HEIGHT - 10:
-			print('Som nad zemou, POMOOOC')
-			self.rect.y += int(abs(self.jumpCount * 2) * 0.5)
-		 """
-		
-		# TODO: Ak: skákanie=true
 		if (self.isJumping):
-			self.rect.y += (self.temp * self.jumpCount)
-			# self.rect.move(0, self.jumpCount * self.temp)
+			if (self.firstJump):
+				self.rect.y -= 2 * self.jumpCount
+				self.firstJump = False
 
-			if (self.rect.top <= 100):
-				print('Hitol si hranicu')
-				self.temp = 1
-			
-			if (self.rect.top >= self.startPositionXY[1]):
-				print(self.rect.top)
-				self.temp = -1
+			if (self.rect.top >= self.zem):
+				print('Si na zemi')
+				self.jumpSegment = -self.jumpSegment
 				self.isJumping = False
+				self.firstJump = True
+				self.rect.y = self.zem
+				return
 
-		
-		# else:
-		#     if self.jumpCount > (self.jumpCount - self.jumpCount * 2):
-		#         self.rect.y -= int((self.jumpCount * abs(self.jumpCount)) * 0.5)
-		#         self.jumpCount -= 1
-		#         print(self.rect.y, self.jumpCount)
-		#     else:
-		#         self.jumpCount = 10
-		#         self.isJumping = False
-
+			if (self.rect.top <= self.hranica):
+				print('Hitol si hranicu')
+				self.jumpSegment = -self.jumpSegment
+			
+			if (self.rect.y <= self.zem and self.rect.y >= self.hranica):
+				rovnica = -((self.rect.y / 18) ** 2)
+				self.rect.y += rovnica * self.jumpSegment
 	
 	def render(self):
 		self.jump()
@@ -105,25 +96,17 @@ while True:
 	
 	# Event Listener
 	for e in pygame.event.get():
+
 		# Window Close
 		if e.type == pygame.QUIT:
 			pygame.quit()
 			exit()
+		
 		# Keyboard Action Listeners
-
 		if e.type == pygame.KEYDOWN:
 			print('Some key got pressed')
 			if e.key == pygame.K_SPACE and not playerVehicle.isJumping:
 				playerVehicle.isJumping = True
-				# playerVehicle.isJumping = True
-				# playerVehicle.jumpCount = 10
-				# playerVehicle.jump()
-				# break
-			# else:
-				# playerVehicle.isJumping = False
-				# break
-			
-				
 	
 	# Screen Render
 	screen.fill(BG_COLOR_SCREEN)
@@ -133,13 +116,8 @@ while True:
 	# Objects Render
 	playerVehicle.render()
 	
-	
-	# player_object = pygame.draw.rect(screen, (COLOR_PLAYER), (0, SCREEN_HEIGHT - PLAYER_HEIGHT - ground_surface.get_height(), PLAYER_WIDTH, PLAYER_HEIGHT), 1)
-	
 	# Window Update
 	pygame.display.update()
-
 	pygame.display.update()
-	delta = clock.tick(FPS) * 0.001
-	clock.tick(FPS / delta)
+	clock.tick(FPS)
 	
