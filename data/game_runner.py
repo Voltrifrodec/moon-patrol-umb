@@ -66,18 +66,18 @@ class Vehicle:
 		
 		# TODO: Ak: skákanie=true
 		if (self.isJumping):
+			self.rect.y += (self.temp * self.jumpCount)
 			# self.rect.move(0, self.jumpCount * self.temp)
 
-			if (self.rect.bottom >= 100):
+			if (self.rect.top <= 100):
 				print('Hitol si hranicu')
-				self.isJumping = False
 				self.temp = 1
 			
-			if (self.rect.bottom <= self.startPositionXY[1]):
+			if (self.rect.top >= self.startPositionXY[1]):
 				print(self.rect.top)
 				self.temp = -1
+				self.isJumping = False
 
-			self.rect.y += (self.temp * self.jumpCount)
 		
 		# else:
 		#     if self.jumpCount > (self.jumpCount - self.jumpCount * 2):
