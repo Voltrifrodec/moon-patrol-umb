@@ -19,6 +19,7 @@ BG_COLOR_SCREEN = (40, 40, 40)
 BG_COLOR_DEFAULT = (0, 143, 230)
 BG_COLOR_SURFACE = (100, 100, 100)
 COLOR_PLAYER = (200, 0, 0)
+COLOR_OBSTACLE = (40, 50, 100)
 
 
 
@@ -49,7 +50,8 @@ class Vehicle:
         self.surface = surface
         self.rect = pygame.Rect(0, self.surface.get_height() - self.h - ground_surface.get_height(), self.w, self.h)
         self.isJumping = False
-        self.jumpCount = 10
+        self.jumpCount = 25
+        self.defaultJumpCount = 25
 
         self.startPositionXY = (self.rect.x, self.rect.y)
 
@@ -58,16 +60,16 @@ class Vehicle:
     
     def jump(self):
         if(self.isJumping):
-            if(self.jumpCount >= -10):
+            if(self.jumpCount >= -self.defaultJumpCount):
                 self.temp = 1
                 if(self.jumpCount < 0):
                     self.temp = -1
-                self.rect.y -= self.jumpCount ** 2 * 0.1 * self.temp * self.jumpHeightMultiplier
+                self.rect.y -= self.jumpCount ** 2 * 0.005 * self.temp * self.jumpHeightMultiplier
                 self.jumpCount -= 1
             else:
                 self.isJumping = False
-                self.jumpCount = 10
-                self.rect.y = int(self.rect.y - self.jumpCount * self.temp)
+                self.jumpCount = self.defaultJumpCount
+                self.rect.y = (self.rect.y - self.jumpCount * self.temp)
                 if(self.rect.y > ground_surface.get_height()):
                     self.rect.y = self.surface.get_height() - self.h - ground_surface.get_height()
                 if(self.rect.top < 0):
@@ -77,8 +79,31 @@ class Vehicle:
     def render(self):
         self.jump()
         pygame.draw.rect(screen, self.color, self.rect)
+        
+        
+#* Obstacle
+class Obstacle:
+    def __init__(self):
+        self.w = 100
+        self.h = 25
+        self.surface = ground_surface
+        self.color = COLOR_OBSTACLE
+        self.rect = pygame.Rect(self.surface.get_width() - self.w, background_surface.get_height() - self.surface.get_height(), self.w, self.h)
+        self.speed = 10
+    
+    def move(self):
+        if(self.rect.x > -self.rect.w):
+            self.rect.x -= self.speed
+        else:
+            self.rect.x = self.surface.get_width()
+    
+    def render(self):
+        self.move()
+        pygame.draw.rect(screen, self.color, self.rect)
 
 playerVehicle = Vehicle(PLAYER_WIDTH, PLAYER_HEIGHT, COLOR_PLAYER, '', background_surface)
+
+testObstacle = Obstacle()
 
 
 #* Fonts
@@ -117,6 +142,7 @@ while True:
     
     # Objects Render
     playerVehicle.render()
+    testObstacle.render()
     
     
     # player_object = pygame.draw.rect(screen, (COLOR_PLAYER), (0, SCREEN_HEIGHT - PLAYER_HEIGHT - ground_surface.get_height(), PLAYER_WIDTH, PLAYER_HEIGHT), 1)
