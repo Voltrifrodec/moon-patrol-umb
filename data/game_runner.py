@@ -20,6 +20,7 @@ BG_COLOR_SCREEN = (40, 40, 40)
 BG_COLOR_DEFAULT = (0, 143, 230)
 BG_COLOR_SURFACE = (100, 100, 100)
 COLOR_PLAYER = (200, 0, 0)
+COLOR_OBSTACLE = (40, 50, 100)
 
 
 
@@ -53,7 +54,7 @@ class Vehicle:
         self.jumpCount = 10
 
         self.firstJump = True
-        self.jumpSegment = 0.045
+        self.jumpSegment = 0.065 # 0.045 → 0.065, kvoli prekazke
         self.hranica = 100
         self.zem = self.rect.y
 
@@ -88,29 +89,30 @@ playerVehicle = Vehicle(PLAYER_WIDTH, PLAYER_HEIGHT, COLOR_PLAYER, '', backgroun
 
 
 class Obstacle:
-    def __init__(self, sizeX: int, sizeY: int, color: tuple, texture: str, surface: pygame.Surface):
-        self.w = sizeX
-        self.h = sizeY
-        self.texture = None if texture == '' else texture
-        self.color = color
-        self.surface = surface
-        self.rect = pygame.Rect(0, self.surface.get_height(
-            ) - self.h - ground_surface.get_height(), self.w, self.h)
-        self.isJumping = False
-        self.jumpCount = 10
-
-        self.firstJump = True
-        self.jumpSegment = 0.045
-        self.hranica = 100
-        self.zem = self.rect.y
+    def __init__(self):
+        self.w = 100
+        self.h = 25
+        self.surface = ground_surface
+        self.color = COLOR_OBSTACLE
+        self.rect = pygame.Rect(self.surface.get_width() - self.w, background_surface.get_height() - self.surface.get_height(), self.w, self.h)
+        self.speed = 10
     
+    def move(self):
+        if(self.rect.x > -self.rect.w):
+            self.rect.x -= self.speed
+        else:
+            self.rect.x = self.surface.get_width()
+
     def render(self):
+        self.move()
         pygame.draw.rect(screen, self.color, self.rect)
+
 
 
 #* Fonts
 game_font_main = pygame.font.Font('assets/fonts/PublicPixel-z84yD.ttf', 14)
 
+testObstacle = Obstacle()
 
 #* Game Runner
 while True:
@@ -136,6 +138,7 @@ while True:
     
     # Objects Render
     playerVehicle.render()
+    testObstacle.render()
     
     # Window Update
     pygame.display.update()
