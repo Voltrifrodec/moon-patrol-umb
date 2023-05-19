@@ -4,7 +4,6 @@
 
 
 ## Poznámky
-- **Deadline**: 30. apríla 2023
 - Nie je potrebné spisovať dokumentáciu (postup vyvíjania projektu), ale je potrebné, aby bol projekt vytvorený po etapách
 
 
