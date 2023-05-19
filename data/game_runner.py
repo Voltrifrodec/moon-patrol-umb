@@ -107,7 +107,24 @@ class Obstacle:
         self.move()
         pygame.draw.rect(screen, self.color, self.rect)
 
-
+projectile_arr = []
+class Projectile():
+    def __init__(self, posY: int):
+        self.w = 10
+        self.h = 10
+        self.color = (200,200,0)
+        self.surface = background_surface
+        # self.rect = pygame.Rect(self.surface.get_width - playerVehicle.w, self.surface.get_height() - playerVehicle.rect.y, self.w, self.h)
+        self.rect = pygame.Rect(playerVehicle.rect.w, playerVehicle.rect.top + (playerVehicle.rect.h / 2), self.w, self.h)
+        self.projectileSpeed = 10
+    
+    def move(self):
+        if(self.rect.x < self.surface.get_width()):
+            self.rect.x += self.projectileSpeed
+    
+    def render(self):
+        self.move()
+        pygame.draw.rect(screen, self.color, self.rect)
 
 #* Fonts
 game_font_main = pygame.font.Font('assets/fonts/PublicPixel-z84yD.ttf', 14)
@@ -130,6 +147,9 @@ while True:
             print('Some key got pressed')
             if e.key == pygame.K_SPACE and not playerVehicle.isJumping:
                 playerVehicle.isJumping = True
+            if e.key == pygame.K_e:
+                print('Player shot a projectile!')
+                projectile_arr.append(Projectile(playerVehicle.rect.y))
     
     # Screen Render
     screen.fill(BG_COLOR_SCREEN)
@@ -139,6 +159,13 @@ while True:
     # Objects Render
     playerVehicle.render()
     testObstacle.render()
+    print('Projectile on screen:', len(projectile_arr))
+    for i, obj in enumerate(projectile_arr):
+        if(obj.rect.x >= screen.get_width()):
+            print('Object is outside screen width, removing...')
+            del projectile_arr[i]
+        else:
+            obj.render()
     
     # Window Update
     pygame.display.update()
