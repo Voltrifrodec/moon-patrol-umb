@@ -143,7 +143,7 @@ class Enemy():
     def __init__(self):
         self.w = ENEMY_WIDTH
         self.h = ENEMY_HEIGHT
-        self.moveSpeed = 2e 
+        self.moveSpeed = 2
         self.projectileSpeed = 5
         self.isDead = False
         self.surface = background_surface
