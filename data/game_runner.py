@@ -134,7 +134,7 @@ game_font_main = pygame.font.Font('assets/fonts/PublicPixel-z84yD.ttf', 18)
 game_font_dev = pygame.font.Font('C:\Windows\Fonts\Arial.ttf', 10)
 testObstacle = Obstacle()
 
-
+ 
 #* Enemy
 (ENEMY_WIDTH, ENEMY_HEIGHT) = (75, 75)
 COLOR_ENEMY = (200, 0, 0)
@@ -143,7 +143,7 @@ class Enemy():
     def __init__(self):
         self.w = ENEMY_WIDTH
         self.h = ENEMY_HEIGHT
-        self.moveSpeed = 7
+        self.moveSpeed = 2e 
         self.projectileSpeed = 5
         self.isDead = False
         self.surface = background_surface
