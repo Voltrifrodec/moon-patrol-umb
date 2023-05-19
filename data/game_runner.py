@@ -77,7 +77,7 @@ class Vehicle:
 				print('Hitol si hranicu')
 				self.jumpSegment = -self.jumpSegment
 			
-			if (self.rect.y <= self.zem and self.rect.y >= self.hranica):
+			if (self.rect.y <= self.zem or self.rect.y >= self.hranica):
 				rovnica = -((self.rect.y / 18) ** 2)
 				self.rect.y += rovnica * self.jumpSegment
 	
