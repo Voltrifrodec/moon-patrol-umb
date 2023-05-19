@@ -19,7 +19,7 @@ clock = pygame.time.Clock()
 BG_COLOR_SCREEN = (40, 40, 40)
 BG_COLOR_DEFAULT = (0, 143, 230)
 BG_COLOR_SURFACE = (100, 100, 100)
-COLOR_PLAYER = (200, 0, 0)
+COLOR_PLAYER = (0, 200, 200)
 COLOR_OBSTACLE = (40, 50, 100)
 
 
@@ -88,13 +88,14 @@ class Vehicle:
 playerVehicle = Vehicle(PLAYER_WIDTH, PLAYER_HEIGHT, COLOR_PLAYER, '', background_surface)
 
 
+#* Obstacle
 class Obstacle:
     def __init__(self):
         self.w = 100
         self.h = 25
         self.surface = ground_surface
         self.color = COLOR_OBSTACLE
-        self.rect = pygame.Rect(self.surface.get_width() - self.w, background_surface.get_height() - self.surface.get_height(), self.w, self.h)
+        self.rect = pygame.Rect(self.surface.get_width() - self.w, background_surface.get_height() - self.surface.get_height() - 5, self.w, self.h)
         self.speed = 10
     
     def move(self):
@@ -107,12 +108,14 @@ class Obstacle:
         self.move()
         pygame.draw.rect(screen, self.color, self.rect)
 
+
+#* Projectile
 projectile_arr = []
 class Projectile():
     def __init__(self, posY: int):
         self.w = 10
         self.h = 10
-        self.color = (200,200,0)
+        self.color = (200, 200, 0)
         self.surface = background_surface
         # self.rect = pygame.Rect(self.surface.get_width - playerVehicle.w, self.surface.get_height() - playerVehicle.rect.y, self.w, self.h)
         self.rect = pygame.Rect(playerVehicle.rect.w, playerVehicle.rect.top + (playerVehicle.rect.h / 2), self.w, self.h)
@@ -127,12 +130,50 @@ class Projectile():
         pygame.draw.rect(screen, self.color, self.rect)
 
 #* Fonts
-game_font_main = pygame.font.Font('assets/fonts/PublicPixel-z84yD.ttf', 14)
-
+game_font_main = pygame.font.Font('assets/fonts/PublicPixel-z84yD.ttf', 18)
+game_font_dev = pygame.font.Font('C:\Windows\Fonts\Arial.ttf', 10)
 testObstacle = Obstacle()
 
+
+#* Enemy
+(ENEMY_WIDTH, ENEMY_HEIGHT) = (75, 75)
+COLOR_ENEMY = (200, 0, 0)
+enemy_arr = []
+class Enemy():
+    def __init__(self):
+        self.w = ENEMY_WIDTH
+        self.h = ENEMY_HEIGHT
+        self.moveSpeed = 7
+        self.projectileSpeed = 5
+        self.isDead = False
+        self.surface = background_surface
+        self.color = COLOR_ENEMY
+        self.rect = pygame.Rect(self.surface.get_width(), self.surface.get_height() - self.h - ground_surface.get_height(), self.w, self.h)
+
+    def move(self):
+        if self.isDead is not True:
+            if(self.rect.x > -self.rect.w):
+                self.rect.x -= self.moveSpeed
+            else:
+                self.rect.x = self.surface.get_width()
+        else:
+            self.isDead = False
+            self.rect.x = self.surface.get_width() + 100
+            return
+
+    def render(self):
+        self.move()
+        pygame.draw.rect(screen, self.color, self.rect)
+
+enemy_arr.append(Enemy())
+
+
 #* Game Runner
-while True:
+gameRunner = True
+score = 0
+score_text = game_font_main.render("Score: {}".format(str(score)), False, (0, 0, 0))
+dev_text = game_font_dev.render("{} {} {}".format(len(projectile_arr), len(enemy_arr), 0), False, (0, 0, 0))
+while gameRunner:
     
     # Event Listener
     for e in pygame.event.get():
@@ -156,16 +197,49 @@ while True:
     screen.blit(background_surface, (0, 0))
     screen.blit(ground_surface, (0, SCREEN_HEIGHT - ground_surface.get_height()))
     
+    
+    # Text Render
+    score_text = game_font_main.render("Score: {}".format(str(score)), False, (0, 0, 0))
+    screen.blit(score_text, (int(SCREEN_HEIGHT / 2), SCREEN_HEIGHT - 100))
+    dev_text = game_font_dev.render("{} {} {}".format(len(projectile_arr), len(enemy_arr), "feature/obstacle"), False, (0, 0, 0))
+    screen.blit(dev_text, (10, SCREEN_HEIGHT - 20))
+    
+    
     # Objects Render
     playerVehicle.render()
     testObstacle.render()
-    print('Projectile on screen:', len(projectile_arr))
+
+    # print('Projectile on screen:', len(projectile_arr))
     for i, obj in enumerate(projectile_arr):
         if(obj.rect.x >= screen.get_width()):
             print('Object is outside screen width, removing...')
             del projectile_arr[i]
         else:
             obj.render()
+            
+    for i, obj in enumerate(enemy_arr):
+        obj.render()
+        # If Enemy is shot
+        if(len(projectile_arr) != 0):
+            for j, projectile in enumerate(projectile_arr):
+                if(obj.rect.colliderect(projectile.rect)):
+                    print("One of the projectile hit enemy! Reseting him...")
+                    obj.isDead = True
+                    score += 100
+                    del projectile_arr[j]
+                    break
+        # If Enemy hit player (bump)
+        if(obj.rect.colliderect(playerVehicle.rect)):
+            print("Player bumped into Enemy. Game over!")
+            gameRunner = False
+    
+    
+    if(playerVehicle.rect.colliderect(testObstacle.rect)):
+        # if((playerVehicle.rect.centerx == testObstacle.rect.centerx) & (playerVehicle.rect.midbottom <= testObstacle.rect.topleft)):
+        print("Obstacle was hit! Game over")
+        gameRunner = False
+
+    
     
     # Window Update
     pygame.display.update()
