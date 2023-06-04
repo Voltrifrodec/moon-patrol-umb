@@ -32,17 +32,11 @@ FPS = 60
 
 
 #* Surfaces - Main
-# background_surface = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
 background_surface = pygame.image.load("assets/images/background_stars.png")
 background_surface = pygame.transform.scale(background_surface, (SCREEN_WIDTH, SCREEN_HEIGHT + 50))
-# background_surface.fill(BG_COLOR_SCREEN)
 
-# ground_surface = pygame.Surface((SCREEN_WIDTH, 150))
 ground_surface = pygame.image.load("assets/images/surface-final.png")
 ground_surface = pygame.transform.scale(ground_surface, (SCREEN_WIDTH, 150))
-# ground_surface.fill(BG_COLOR_SURFACE)
-
-# print(ground_surface.get_rect().top, ground_surface.get_rect().bottom)
 
 #* Player
 [PLAYER_WIDTH, PLAYER_HEIGHT] = [100, 100]
