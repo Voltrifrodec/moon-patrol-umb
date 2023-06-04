@@ -20,7 +20,7 @@ BG_COLOR_SCREEN = (40, 40, 40)
 BG_COLOR_DEFAULT = (0, 143, 230)
 BG_COLOR_SURFACE = (100, 100, 100)
 COLOR_PLAYER = (0, 200, 200)
-COLOR_OBSTACLE = (40, 50, 100)
+COLOR_OBSTACLE = (0, 0, 0)
 
 
 
@@ -34,11 +34,13 @@ FPS = 60
 #* Surfaces - Main
 # background_surface = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
 background_surface = pygame.image.load("assets/images/background_stars.png")
-background_surface = pygame.transform.scale(background_surface, (SCREEN_WIDTH, SCREEN_HEIGHT))
+background_surface = pygame.transform.scale(background_surface, (SCREEN_WIDTH, SCREEN_HEIGHT + 50))
 # background_surface.fill(BG_COLOR_SCREEN)
 
-ground_surface = pygame.Surface((SCREEN_WIDTH, 150))
-ground_surface.fill(BG_COLOR_SURFACE)
+# ground_surface = pygame.Surface((SCREEN_WIDTH, 150))
+ground_surface = pygame.image.load("assets/images/surface.png")
+ground_surface = pygame.transform.scale(ground_surface, (SCREEN_WIDTH, 150))
+# ground_surface.fill(BG_COLOR_SURFACE)
 
 # print(ground_surface.get_rect().top, ground_surface.get_rect().bottom)
 
@@ -100,7 +102,7 @@ class Obstacle:
         self.h = 25
         self.surface = ground_surface
         self.color = COLOR_OBSTACLE
-        self.rect = pygame.Rect(self.surface.get_width() - self.w, background_surface.get_height() - self.surface.get_height() - 5, self.w, self.h)
+        self.rect = pygame.Rect(self.surface.get_width() - self.w, background_surface.get_height() - self.surface.get_height() - 25, self.w, self.h)
         self.speed = 10
     
     def move(self):
