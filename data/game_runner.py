@@ -96,7 +96,8 @@ class Obstacle:
 		self.h = 25
 		self.surface = ground_surface
 		self.color = COLOR_OBSTACLE
-		self.rect = pygame.Rect(self.surface.get_width() - self.w, background_surface.get_height() - self.surface.get_height() - 25, self.w, self.h)
+		self.rect = pygame.Rect(self.surface.get_width(), background_surface.get_height() - ground_surface.get_height() - 21, self.w, self.h)
+		self.image = pygame.image.load('assets/images/ravine3.png')
 		self.speed = 10
 	
 	def move(self):
@@ -107,7 +108,7 @@ class Obstacle:
 
 	def render(self):
 		self.move()
-		pygame.draw.rect(screen, self.color, self.rect)
+		screen.blit(self.image, self.rect)
 
 
 #* Projectile
