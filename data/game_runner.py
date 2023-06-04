@@ -38,7 +38,7 @@ background_surface = pygame.transform.scale(background_surface, (SCREEN_WIDTH, S
 # background_surface.fill(BG_COLOR_SCREEN)
 
 # ground_surface = pygame.Surface((SCREEN_WIDTH, 150))
-ground_surface = pygame.image.load("assets/images/surface.png")
+ground_surface = pygame.image.load("assets/images/surface-final.png")
 ground_surface = pygame.transform.scale(ground_surface, (SCREEN_WIDTH, 150))
 # ground_surface.fill(BG_COLOR_SURFACE)
 
