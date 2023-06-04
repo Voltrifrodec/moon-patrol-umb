@@ -138,7 +138,7 @@ testObstacle = Obstacle()
 
  
 #* Enemy
-(ENEMY_WIDTH, ENEMY_HEIGHT) = (75, 75)
+(ENEMY_WIDTH, ENEMY_HEIGHT) = (100, 50)
 COLOR_ENEMY = (200, 0, 0)
 enemy_arr = []
 class Enemy():
@@ -151,6 +151,7 @@ class Enemy():
 		self.surface = background_surface
 		self.color = COLOR_ENEMY
 		self.rect = pygame.Rect(self.surface.get_width(), self.surface.get_height() - self.h - ground_surface.get_height(), self.w, self.h)
+		self.image = pygame.transform.scale(pygame.image.load('assets/images/Enemy Land.png'), self.rect.size)
 
 	def move(self):
 		if self.isDead is not True:
@@ -165,7 +166,7 @@ class Enemy():
 
 	def render(self):
 		self.move()
-		pygame.draw.rect(screen, self.color, self.rect)
+		screen.blit(self.image, self.rect)
 
 enemy_arr.append(Enemy())
 
