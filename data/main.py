@@ -262,7 +262,7 @@ class Player(GameObject):
 			if (self.imageRectangle.y <= self.zemY or self.imageRectangle.y >= self.hranica):
 				print(f'skaces{self.imageRectangle.y}')
 				print(f'posY: {self.positionY}')
-				rovnica = -((self.positionY / 20) ** 2)
+				rovnica = -((self.positionY / 18) ** 2)
 				print(f'rovnica: {rovnica}')
 				self.positionY += rovnica * self.jumpSegment
 	
@@ -462,6 +462,11 @@ class Game():
 	# Checks if the current game is paused
 	def isPaused(self) -> bool:
 		return self.scene.current == self.scene.pause
+	
+	def playerShootProjectile(self):
+		# TODO: Add player.shoot method
+		# self.player.shoot()
+		pass
 
 
 '''Game creating'''
@@ -487,6 +492,10 @@ while game.RUNNING:
 					or event.key == pygame.K_p: game.pause()
 				# Player jumps when the spacebar is pressed
 				if event.key == pygame.K_SPACE: game.jumpPlayer()
+				
+				if event.key == pygame.K_e:
+					print('Player shot a projectile!')
+					game.playerShootProjectile()
 
 		# Checks if the game is about to be quitted
 		if event.type == pygame.QUIT:
