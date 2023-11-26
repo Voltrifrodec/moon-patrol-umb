@@ -252,7 +252,7 @@ class Player(GameObject):
 				self.jumpSegment = -self.jumpSegment
 				self.isJumping = False
 				self.firstJump = True
-				self.imageRectangle.y = self.zemY
+				self.positionY = self.zemY
 				return
 
 			if (self.positionY <= self.hranica):
