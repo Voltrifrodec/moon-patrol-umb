@@ -495,6 +495,7 @@ while game.RUNNING:
 		# Checks if the game is about to be quitted
 		if event.type == pygame.QUIT:
 			game.quit()
+			break
 	# Draws the current scene
 	game.drawScene()
 	# Update double buffer
