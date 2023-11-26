@@ -12,14 +12,14 @@ from enum import Enum
 
 '''Variable for testing'''
 global TEST
-TEST = False
+TEST = False # Change to true, if you want to be ingame right away
 
 
 '''Global variables/constants'''
 WHITE = pygame.Color('white')
 BLACK = pygame.Color('black')
 YELLOW = pygame.Color('yellow')
-
+ENEMY_WIDTH = 48
 
 '''Class declarations'''
 class Game(): ...
@@ -200,6 +200,7 @@ class End(Scene):
 		if self.menu.doesCollide(x, y):
 			self.game.scene.changeTo(self.game.scene.menu)
 
+
 '''Game object class'''
 class GameObject():
 	def __init__(self, positionX:int=0, positionY:int=0, color:pygame.Color=BLACK, imagePath:str=None, surface:pygame.Surface=None, width:int=48, height:int=24) -> None:
@@ -213,25 +214,29 @@ class GameObject():
 		self.width = width
 		self.height = height
 
+		if color is None and imagePath is None:
+			raise ValueError('One of color or imagePath must not be None!')
+
 		if color is not None:
 			self.color = pygame.color.Color(color)
 		
 		if imagePath is not None:
 			self.image = pygame.image.load(imagePath)
-			self.image = pygame.transform.scale(self.image, (64, 32))
-			self.imageRectangle = self.image.get_rect(x=positionX, y=positionY)
+			self.image = pygame.transform.scale(self.image, (self.width, self.height))
+			self.rect = self.image.get_rect(x=positionX, y=positionY)
 			self.imageWidth = self.image.get_width()
 			self.imageHeight = self.image.get_height()
 	
 	# Draws object on screen
 	def draw(self):
 		if self.image is not None:
-			self.imageRectangle = self.image.get_rect(x=self.positionX, y=self.positionY)
-			self.surface.blit(self.image, self.imageRectangle)
+			self.rect = self.image.get_rect(x=self.positionX, y=self.positionY)
+			self.surface.blit(self.image, self.rect)
 	
 	# Checks positions
 	def checkcollision(self, x:int, y:int):
 		return self.positionX == x or self.positionY == y
+
 
 '''Player class'''
 class Player(GameObject):
@@ -243,7 +248,7 @@ class Player(GameObject):
 		self.firstJump = True
 		self.jumpSegment = 0.085 # 0.045 → 0.065, kvoli prekazke
 		self.hranica = 200 # TODO: Change
-		self.zemY = self.imageRectangle.y
+		self.zemY = self.rect.y
 		self.projectileSpeed = projectileSpeed
 
 	# Moves
@@ -251,10 +256,10 @@ class Player(GameObject):
 		if (self.isJumping):
 			if TEST: print('jumping')
 			if (self.firstJump):
-				self.imageRectangle.y -= 2 * self.jumpCount
+				self.rect.y -= 2 * self.jumpCount
 				self.firstJump = False
 
-			if (self.imageRectangle.top >= self.zemY):
+			if (self.rect.top >= self.zemY):
 				if TEST: print('Si na zemi')
 				self.jumpSegment = -self.jumpSegment
 				self.isJumping = False
@@ -268,21 +273,21 @@ class Player(GameObject):
 			
 			if (self.positionY <= self.zemY or self.positionY <= self.hranica):
 				if TEST: print('skaces')
-				rovnica = -((self.positionY / 18) ** 2)
+				rovnica = -((self.positionY / 20) ** 2)
 				self.positionY += rovnica * self.jumpSegment
 	
 	# Draws
 	def draw(self):
 		if self.image is not None:
-			self.imageRectangle = self.image.get_rect(x=self.positionX, y=self.positionY)
-			self.surface.blit(self.image, self.imageRectangle)
+			self.rect = self.image.get_rect(x=self.positionX, y=self.positionY)
+			self.surface.blit(self.image, self.rect)
 	
 	def jump(self):
 		self.isJumping = True
 
 	# Checks collisions
 	def checkcollisions(self, obj:GameObject):
-		return self.imageRectangle.colliderect(obj.imageRectangle)
+		return self.rect.colliderect(obj.rect)
 	
 	def shoot(self):
 		[projectileX, projectileY] = self.positionX + self.width, self.positionY + (self.height //2)
@@ -301,8 +306,8 @@ class Obstacle(GameObject):
 		self.positionX -= self.speed
 
 	def draw(self):
-		self.imageRectangle = self.image.get_rect(x=self.positionX, y=self.positionY)
-		self.surface.blit(self.image, self.imageRectangle)
+		self.rect = self.image.get_rect(x=self.positionX, y=self.positionY)
+		self.surface.blit(self.image, self.rect)
 	
 	def resetPosition(self):
 		self.positionX = self.defaultPositionX
@@ -312,7 +317,35 @@ class Obstacle(GameObject):
 		return self.positionX + self.width < 0
 
 
-#* Projectile
+'''Enemy class'''
+class Enemy(GameObject):
+	def __init__(self, positionX:int=0, positionY:int=0, width:int=100, height:int=25, color: pygame.Color = BLACK, imagePath: str = 'assets/images/Enemy Land.png', surface:pygame.Surface=None, speed:int=10) -> None:
+		super().__init__(positionX, positionY, color, imagePath, surface, width, height)
+		self.defaultPositionX = positionX
+		self.defaultPositionY = positionY
+		self.speed = speed
+		self.rect = self.image.get_rect(x=self.positionX, y=self.positionY)
+	
+	def move(self):
+		self.positionX -= self.speed
+
+	def draw(self):
+		self.rect = self.image.get_rect(x=self.positionX, y=self.positionY)
+		self.surface.blit(self.image, self.rect)
+	
+	def resetPosition(self):
+		self.positionX = self.defaultPositionX
+		self.positionY = self.defaultPositionY
+	
+	def isOutOfScreen(self) -> bool:
+		return self.positionX + self.width < 0
+	
+	# Checks collisions
+	def checkcollisions(self, obj: GameObject):
+		return self.rect.colliderect(obj.rect)
+
+
+'''Projectile class'''
 class Projectile(GameObject):
 	def __init__(self, positionX: int = 0, positionY: int = 0, color: pygame.Color = YELLOW, imagePath: str = None, surface: pygame.Surface = None, projectileSpeed:int=15, direction:Direction=Direction.RIGHT, width:int=10, height:int=5) -> None:
 		super().__init__(positionX, positionY, color, imagePath, surface)
@@ -384,16 +417,14 @@ class Game():
 	# Initializes objects
 	def initializeObjects(self):
 		self.player = None
-		self.enemies = [] 	# change type to : list[Enemy]
+		self.enemies: list[Enemy] = []
 		self.objects: list[GameObject] = []
 
 	# Adds players
 	def addPlayers(self):
 		self.addObject(Player(0, self.calculateGroundSurfaceY(), None, './assets/images/player2.png', self.surface, 10, 48, 24))
-		self.addObject(Obstacle(self.surface.get_width(), self.surface.get_height() - self.groundSurfacePositionY + 28, 100, 30, None, './assets/images/ravine3.png', self.surface, 15))
-		# TODO: Add Enemy
-		# self.addObject(Enemy(32*9, 32*5, 'Oilerov', None, './assets/images/enemy2.png', self.screen))
-		pass
+		self.addObject(Obstacle(self.surface.get_width(), self.calculateGroundSurfaceY() + 28, 100, 100, None, './assets/images/ravine3.png', self.surface, 8))
+		self.addObject(Enemy(self.surface.get_width(), self.calculateGroundSurfaceY(), ENEMY_WIDTH, 24, None, 'assets/images/Enemy Land.png', self.surface, 5))
 
 	def calculateGroundSurfaceY(self):
 		return self.surface.get_height() - self.groundSurfacePositionY
@@ -405,8 +436,7 @@ class Game():
 	# Adds an object to belonging arrays
 	def addObject(self, gameObject:GameObject):
 		if isinstance(gameObject, Player): self.player = gameObject
-		# if isinstance(gameObject, Enemy):	self.enemies.append(gameObject)
-		# if isinstance(gameObject, Obstacle): self.objects.append(gameObject)
+		if isinstance(gameObject, Enemy):	self.enemies.append(gameObject)
 		if isinstance(gameObject, GameObject): self.objects.append(gameObject)
 	
 	# Updates the screen from double buffer
@@ -438,13 +468,12 @@ class Game():
 				else:
 					obj.move()
 			# Enemies
-			# if (isinstance(obj, Enemy)):
-			# 	isOutOfScreen = obj.isOutOfScreen()
-			# 	if (isOutOfScreen):
-			# 		self.deleteObject(obj)
-			# 	else:
-			# 		obj.move()
-
+			if (isinstance(obj, Enemy)):
+				isOutOfScreen = obj.isOutOfScreen()
+				if (isOutOfScreen):
+					obj.resetPosition()
+				else:
+					obj.move()
 
 	def deleteObject(self, obj):
 		self.objects.remove(obj)
@@ -458,9 +487,17 @@ class Game():
 				if self.player.checkcollisions(obj):
 					self.endCurrentGame()
 			# Enemies
-			# if isinstance(obj, Enemy):
-			# 	if self.player.checkcollisions(obj):
-			# 		self.endCurrentGame
+			if isinstance(obj, Enemy):
+				if self.player.checkcollisions(obj):
+					self.endCurrentGame()
+			# Check destroying enemies
+			for enemy in self.enemies:
+				if (isinstance(obj, Projectile)):
+					projectile = obj
+					if enemy.checkcollisions(projectile):
+						self.deleteObject(projectile)
+						enemy.resetPosition()
+						self.score += 1
 	
 	# Draws all the objects
 	def draw(self):
