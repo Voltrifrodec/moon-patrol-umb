@@ -8,6 +8,8 @@ import random
 
 import numpy as np
 
+from enum import Enum
+
 '''Variable for testing'''
 global TEST
 TEST = False
@@ -16,6 +18,7 @@ TEST = False
 '''Global variables/constants'''
 WHITE = pygame.Color('white')
 BLACK = pygame.Color('black')
+YELLOW = pygame.Color('yellow')
 
 
 '''Class declarations'''
@@ -26,6 +29,10 @@ class InGame(): ...
 class Pause(): ...
 class End(): ...
 class Text(): ...
+
+class Direction(Enum):
+	RIGHT = 1,
+	LEFT = -1
 
 '''Text class'''
 class Text():
@@ -64,7 +71,7 @@ class Text():
 '''Scene class'''
 class Scene():
 	def __init__(self, game:Game) -> None:
-		self.current = None
+		self.current: Scene = None
 		self.game = game
 	
 	# Initializes scenes
@@ -197,20 +204,23 @@ class End(Scene):
 
 '''Game object class'''
 class GameObject():
-	def __init__(self, positionX:int=0, positionY:int=0, color:pygame.Color=BLACK, imagePath:str=None, surface:pygame.Surface=None) -> None:
+	def __init__(self, positionX:int=0, positionY:int=0, color:pygame.Color=BLACK, imagePath:str=None, surface:pygame.Surface=None, width:int=48, height:int=24) -> None:
 		self.positionX = positionX
 		self.positionY = positionY
 		self.color = color
 		self.imagePath = imagePath
 		self.image = None
-		self.screen = surface
+		self.surface = surface
+
+		self.width = width
+		self.height = height
 
 		if color is not None:
 			self.color = pygame.color.Color(color)
 		
 		if imagePath is not None:
 			self.image = pygame.image.load(imagePath)
-			self.image = pygame.transform.scale(self.image, (32, 32))
+			self.image = pygame.transform.scale(self.image, (64, 32))
 			self.imageRectangle = self.image.get_rect(x=positionX, y=positionY)
 			self.imageWidth = self.image.get_width()
 			self.imageHeight = self.image.get_height()
@@ -219,7 +229,7 @@ class GameObject():
 	def draw(self):
 		if self.image is not None:
 			self.imageRectangle = self.image.get_rect(x=self.positionX, y=self.positionY)
-			self.screen.blit(self.image, self.imageRectangle)
+			self.surface.blit(self.image, self.imageRectangle)
 	
 	# Checks positions
 	def checkcollision(self, x:int, y:int):
@@ -227,15 +237,16 @@ class GameObject():
 
 '''Player class'''
 class Player(GameObject):
-	def __init__(self, positionX, positionY, color: pygame.Color = None, imagePath: str = None, screen=None) -> None:
-		super().__init__(positionX, positionY, color, imagePath, screen)
+	def __init__(self, positionX, positionY, color: pygame.Color = None, imagePath: str = None, screen=None, projectileSpeed=10, width=48, height=28) -> None:
+		super().__init__(positionX, positionY, color, imagePath, screen, width, height)
 		self.startingPosition = positionX, positionY
 		self.jumpCount = 10
 		self.isJumping = False
 		self.firstJump = True
-		self.jumpSegment = 0.065 # 0.045 → 0.065, kvoli prekazke
+		self.jumpSegment = 0.085 # 0.045 → 0.065, kvoli prekazke
 		self.hranica = 200 # TODO: Change
 		self.zemY = self.imageRectangle.y
+		self.projectileSpeed = projectileSpeed
 
 	# Moves
 	def move(self):
@@ -245,19 +256,19 @@ class Player(GameObject):
 				self.firstJump = False
 
 			if (self.imageRectangle.top >= self.zemY):
-				print('Si na zemi')
+				if TEST: print('Si na zemi')
 				self.jumpSegment = -self.jumpSegment
 				self.isJumping = False
 				self.firstJump = True
 				self.positionY = self.zemY
 				return
 
-			if (self.positionY <= self.hranica):
-				print('Hitol si hranicu')
+			if (self.positionY < self.hranica):
+				if TEST: print('Hitol si hranicu')
 				self.jumpSegment = -self.jumpSegment
 			
-			if (self.imageRectangle.y <= self.zemY or self.imageRectangle.y >= self.hranica):
-				print('skaces')
+			if (self.positionY <= self.zemY or self.positionY <= self.hranica):
+				if TEST: print('skaces')
 				rovnica = -((self.positionY / 18) ** 2)
 				self.positionY += rovnica * self.jumpSegment
 	
@@ -265,7 +276,7 @@ class Player(GameObject):
 	def draw(self):
 		if self.image is not None:
 			self.imageRectangle = self.image.get_rect(x=self.positionX, y=self.positionY)
-			self.screen.blit(self.image, self.imageRectangle)
+			self.surface.blit(self.image, self.imageRectangle)
 	
 	def jump(self):
 		self.isJumping = True
@@ -273,18 +284,22 @@ class Player(GameObject):
 	# Checks collisions
 	def checkcollisions(self, obj:GameObject):
 		return self.imageRectangle.colliderect(obj.imageRectangle)
+	
+	def shoot(self):
+		[projectileX, projectileY] = self.positionX + self.width, self.positionY + (self.height //2)
+		return Projectile(projectileX, projectileY, surface=self.surface, projectileSpeed=self.projectileSpeed)
 
 '''Obstacle class'''
 class Obstacle(GameObject):
-	def __init__(self, positionX:int=0, positionY:int=0, width:int=100, height:int=25, color: pygame.Color = BLACK, imagePath: str = 'assets/images/ravine3.png', screen:pygame.Surface=None) -> None:
-		super().__init__(positionX, positionY, color, imagePath, screen)
+	def __init__(self, positionX:int=0, positionY:int=0, width:int=100, height:int=25, color: pygame.Color = BLACK, imagePath: str = 'assets/images/ravine3.png', surface:pygame.Surface=None, speed:int=10) -> None:
+		super().__init__(positionX, positionY, color, imagePath, surface, width, height)
 		self.w = width
 		self.h = height
-		self.surface = pygame.image.load("assets/images/surface-final.png")
-		self.surface = pygame.transform.scale(self.surface, (WINDOW_WIDTH, WINDOW_HEIGHT + 50))
+		# self.surface = pygame.image.load("assets/images/surface-final.png")
+		# self.surface = pygame.transform.scale(self.surface, (WINDOW_WIDTH, WINDOW_HEIGHT + 50))
 		self.rect = pygame.Rect(self.surface.get_width(), self.surface.get_height() - self.surface.get_height() - 21, self.w, self.h)
 		self.image = pygame.image.load('assets/images/ravine3.png')
-		self.speed = 10
+		self.speed = speed
 	
 	def move(self):
 		if(self.rect.x > -self.rect.w):
@@ -294,7 +309,38 @@ class Obstacle(GameObject):
 
 	def render(self):
 		self.move()
-		self.screen.blit(self.image, self.rect)
+		self.surface.blit(self.image, self.rect)
+
+
+#* Projectile
+class Projectile(GameObject):
+	def __init__(self, positionX: int = 0, positionY: int = 0, color: pygame.Color = YELLOW, imagePath: str = None, surface: pygame.Surface = None, projectileSpeed:int=15, direction:Direction=Direction.RIGHT, width:int=10, height:int=5) -> None:
+		super().__init__(positionX, positionY, color, imagePath, surface)
+		self.w = width
+		self.h = height
+		self.rect = pygame.Rect(self.positionX, self.positionY, self.w, self.h)
+		self.projectileSpeed = projectileSpeed
+		self.direction = direction
+	
+	def move(self) -> bool:
+		if (self.direction == Direction.RIGHT):
+			self.rect.x += self.projectileSpeed
+		
+		if (self.direction == Direction.LEFT):
+			self.rect.x -= self.projectileSpeed
+	
+	def isOutOfScreen(self) -> bool:
+		if (self.direction == Direction.RIGHT):
+			if(self.rect.x > self.surface.get_width()):
+				return True
+		if (self.direction == Direction.LEFT):
+			if(self.rect.x < 0):
+				return True
+		return False
+	
+	def draw(self):
+		pygame.draw.rect(self.surface, self.color, self.rect)
+
 
 '''Game class'''
 class Game():
@@ -317,15 +363,15 @@ class Game():
 	# Initializes objects
 	def initializeObjects(self):
 		self.player = None
-		self.enemies = []
+		self.enemies = [] 	# change type to : list[Enemy]
 		self.objects: list[GameObject] = []
-		self.points = []
 
 	# Adds players
 	def addPlayers(self):
 		# TODO: ADD Player as a vehicle
-		self.addObject(Player(0, self.calculateGroundSurfaceY(), None, './assets/images/player2.png', self.surface))
-		# TODO: Add Enemy, that will be destroyed
+		self.addObject(Player(0, self.calculateGroundSurfaceY(), None, './assets/images/player2.png', self.surface, 10, 48, 24))
+		# TODO: Add Enemy
+		# self.addObject(Enemy(32*8, 32*5, 'Ragdolle', None, './assets/images/enemy1.png', self.screen))
 		# TODO: Add Obstacle
 		# self.addObject(Obstacle(self.screen.get_width(), self.screen.get_height(), 100, 25, 'Player', BLACK, './assets/images/player2.png', self.screen))
 		# self.addObject(Enemy(32*8, 32*5, 'Ragdolle', None, './assets/images/enemy1.png', self.screen))
@@ -333,7 +379,7 @@ class Game():
 		pass
 
 	def calculateGroundSurfaceY(self):
-		return 400
+		return 450
 		return self.surface.get_rect().y - self.groundSurfaceSurface.get_height()
 	
 	# Initializes the game
@@ -364,7 +410,7 @@ class Game():
 	def addObject(self, gameObject:GameObject):
 		if isinstance(gameObject, Player): self.player = gameObject
 		# if isinstance(gameObject, Enemy):	self.enemies.append(gameObject)
-		# if isinstance(gameObject, Point): 	self.points.append(gameObject)
+		# if isinstance(gameObject, Projectile): self.objects.append(gameObject)
 		if isinstance(gameObject, GameObject): self.objects.append(gameObject)
 	
 	# Updates the screen from double buffer
@@ -393,6 +439,19 @@ class Game():
 
 			n.move()
 	
+	def moveProjectiles(self):
+		for obj in self.objects:
+			if (isinstance(obj, Projectile)):
+				isOutOfScreen = obj.isOutOfScreen()
+				if (isOutOfScreen):
+					self.deleteObject(obj)
+				else:
+					obj.move()
+
+	def deleteObject(self, obj):
+		self.objects.remove(obj)
+		del obj
+	
 	# Checks collisions on all objects
 	def checkCollisionOnAllObjects(self):
 		for enemy in self.enemies:
@@ -404,6 +463,7 @@ class Game():
 	def draw(self):
 		self.moveEnemies()
 		self.movePlayer()
+		self.moveProjectiles()
 		self.drawBackground()
 		self.drawGroundSurface()
 		self.drawAllObjects()
@@ -457,9 +517,8 @@ class Game():
 		return self.scene.current == self.scene.pause
 	
 	def playerShootProjectile(self):
-		# TODO: Add player.shoot method
-		# self.player.shoot()
-		pass
+		projectileObject = self.player.shoot()
+		self.addObject(projectileObject)
 
 
 '''Game creating'''
