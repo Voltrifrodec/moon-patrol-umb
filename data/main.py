@@ -368,7 +368,6 @@ class Game():
 
 	# Adds players
 	def addPlayers(self):
-		# TODO: ADD Player as a vehicle
 		self.addObject(Player(0, self.calculateGroundSurfaceY(), None, './assets/images/player2.png', self.surface, 10, 48, 24))
 		# TODO: Add Enemy
 		# self.addObject(Enemy(32*8, 32*5, 'Ragdolle', None, './assets/images/enemy1.png', self.screen))
