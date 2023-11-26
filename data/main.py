@@ -473,7 +473,7 @@ game = Game(WINDOW_WIDTH, WINDOW_HEIGHT, fps=FPS, backgroundImagePath='assets/im
 while game.RUNNING:
 	# Processing events
 	for event in pygame.event.get():
-		# Check left mouse button click
+		# Check if left mouse button was clicked
 		if pygame.mouse.get_pressed(3)[0]:
 			game.scene.current.update(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])
 		# Checks the keys if the game is playing or paused
@@ -481,14 +481,16 @@ while game.RUNNING:
 			# Checks if any key is pressed
 			if event.type == pygame.KEYDOWN:
 				# Checks if the game should be paused
-				if event.key == pygame.K_ESCAPE \
-					or event.key == pygame.K_p: game.pause()
-				# Player jumps when the spacebar is pressed
-				if event.key == pygame.K_SPACE: game.jumpPlayer()
+				if event.key == pygame.K_ESCAPE or event.key == pygame.K_p:
+					game.pause()
 				
-				if event.key == pygame.K_e:
-					print('Player shot a projectile!')
-					game.playerShootProjectile()
+				if not game.isPaused():
+					# Player jumps when the spacebar is pressed
+					if event.key == pygame.K_SPACE:
+						game.jumpPlayer()
+					# Player shoots when the "e" key is pressed
+					if event.key == pygame.K_e:
+						game.playerShootProjectile()
 
 		# Checks if the game is about to be quitted
 		if event.type == pygame.QUIT:
