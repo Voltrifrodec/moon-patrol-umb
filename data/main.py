@@ -237,9 +237,6 @@ class Player(GameObject):
 		self.hranica = 200 # TODO: Change
 		self.zemY = self.imageRectangle.y
 
-		print(self.zemY)
-		print(self.zemY)
-	
 	# Moves
 	def move(self):
 		if (self.isJumping):
@@ -260,17 +257,13 @@ class Player(GameObject):
 				self.jumpSegment = -self.jumpSegment
 			
 			if (self.imageRectangle.y <= self.zemY or self.imageRectangle.y >= self.hranica):
-				print(f'skaces{self.imageRectangle.y}')
-				print(f'posY: {self.positionY}')
+				print('skaces')
 				rovnica = -((self.positionY / 18) ** 2)
-				print(f'rovnica: {rovnica}')
 				self.positionY += rovnica * self.jumpSegment
 	
 	# Draws
 	def draw(self):
-		# print('draw was called.')
 		if self.image is not None:
-			# print('drawing image')
 			self.imageRectangle = self.image.get_rect(x=self.positionX, y=self.positionY)
 			self.screen.blit(self.image, self.imageRectangle)
 	
