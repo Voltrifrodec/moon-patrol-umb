@@ -434,8 +434,8 @@ class Game():
 
 	# Adds players
 	def addPlayers(self):
-		self.addObject(Player(0, self.calculateGroundSurfaceY(), None, './assets/images/player2.png', self.surface, 10, 48, 24))
-		self.addObject(Obstacle(self.surface.get_width(), self.calculateGroundSurfaceY() + 23, 100, 100, None, './assets/images/ravine3.png', self.surface, 8))
+		self.addObject(Player(0, self.calculateGroundSurfaceY() + 5, None, './assets/images/player2.png', self.surface, 10, 48, 24))
+		self.addObject(Obstacle(self.surface.get_width(), self.calculateGroundSurfaceY() + 28, 100, 100, None, './assets/images/ravine3.png', self.surface, 8))
 		self.addObject(Enemy(self.surface.get_width(), self.calculateGroundSurfaceY(), ENEMY_WIDTH, 24, None, ('assets/images/Enemy Land_{}.png'.format(random.randint(1,2))), self.surface, 5))
 
 	def calculateGroundSurfaceY(self):
