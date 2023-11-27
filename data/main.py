@@ -1,6 +1,7 @@
 '''Imports'''
 # sys module
 import sys
+from time import sleep
 # PyGame module
 import pygame
 # Random module
@@ -246,10 +247,11 @@ class Player(GameObject):
 		self.jumpCount = 10
 		self.isJumping = False
 		self.firstJump = True
-		self.jumpSegment = 0.085 # 0.045 → 0.065, kvoli prekazke
+		self.jumpSegment = 0.065 # 0.045 → 0.065, kvoli prekazke
 		self.hranica = 200 # TODO: Change
 		self.zemY = self.rect.y
 		self.projectileSpeed = projectileSpeed
+		self.hitCeiling = False
 
 	# Moves
 	def move(self):
@@ -258,6 +260,7 @@ class Player(GameObject):
 			if (self.firstJump):
 				self.rect.y -= 2 * self.jumpCount
 				self.firstJump = False
+				self.fallSpeed = self.jumpCount  
 
 			if (self.rect.top >= self.zemY):
 				if TEST: print('Si na zemi')
@@ -265,14 +268,19 @@ class Player(GameObject):
 				self.isJumping = False
 				self.firstJump = True
 				self.positionY = self.zemY
+				self.hitCeiling = False
+				self.fallSpeed = 0.05
 				return
 
 			if (self.positionY < self.hranica):
 				if TEST: print('Hitol si hranicu')
 				self.jumpSegment = -self.jumpSegment
+				self.hitCeiling = True
 			
 			if (self.positionY <= self.zemY or self.positionY <= self.hranica):
 				if TEST: print('skaces')
+				if(self.hitCeiling is True):
+					pass
 				rovnica = -((self.positionY / 20) ** 2)
 				self.positionY += rovnica * self.jumpSegment
 	
@@ -343,6 +351,10 @@ class Enemy(GameObject):
 	# Checks collisions
 	def checkcollisions(self, obj: GameObject):
 		return self.rect.colliderect(obj.rect)
+
+'''Flying Enemy class'''
+class FlyingEnemy(GameObject):
+	pass
 
 
 '''Projectile class'''
@@ -423,8 +435,8 @@ class Game():
 	# Adds players
 	def addPlayers(self):
 		self.addObject(Player(0, self.calculateGroundSurfaceY(), None, './assets/images/player2.png', self.surface, 10, 48, 24))
-		self.addObject(Obstacle(self.surface.get_width(), self.calculateGroundSurfaceY() + 28, 100, 100, None, './assets/images/ravine3.png', self.surface, 8))
-		self.addObject(Enemy(self.surface.get_width(), self.calculateGroundSurfaceY(), ENEMY_WIDTH, 24, None, 'assets/images/Enemy Land.png', self.surface, 5))
+		self.addObject(Obstacle(self.surface.get_width(), self.calculateGroundSurfaceY() + 23, 100, 100, None, './assets/images/ravine3.png', self.surface, 8))
+		self.addObject(Enemy(self.surface.get_width(), self.calculateGroundSurfaceY(), ENEMY_WIDTH, 24, None, ('assets/images/Enemy Land_{}.png'.format(random.randint(1,2))), self.surface, 5))
 
 	def calculateGroundSurfaceY(self):
 		return self.surface.get_height() - self.groundSurfacePositionY
@@ -486,18 +498,22 @@ class Game():
 			if isinstance(obj, Obstacle):
 				if self.player.checkcollisions(obj):
 					self.endCurrentGame()
-			# Enemies
+			# Enemiese
 			if isinstance(obj, Enemy):
 				if self.player.checkcollisions(obj):
 					self.endCurrentGame()
 			# Check destroying enemies
 			for enemy in self.enemies:
+				print("Checking enemy #{}".format(self.enemies.index(enemy)))
 				if (isinstance(obj, Projectile)):
 					projectile = obj
 					if enemy.checkcollisions(projectile):
+						print("\tBoom, he got shot fr ong +1 L ration average Bratislava resident vibes 2004 Techno House Party")
+						self.deleteObject(enemy)
+						self.enemies.remove(enemy)
 						self.deleteObject(projectile)
-						enemy.resetPosition()
 						self.score += 1
+						return
 	
 	# Draws all the objects
 	def draw(self):
@@ -557,6 +573,15 @@ class Game():
 	def playerShootProjectile(self):
 		projectileObject = self.player.shoot()
 		self.addObject(projectileObject)
+  
+	def getEnemiesCount(self):
+		# return sum(isinstance(obj, Enemy) for obj in self.objects)
+		return len(self.enemies)
+  
+	def enemySpawn(self):
+		enemy = Enemy(self.surface.get_width(), self.calculateGroundSurfaceY(), ENEMY_WIDTH, 24, None, ('assets/images/Enemy Land_{}.png'.format(random.randint(1,4))), self.surface, 5)
+		self.addObject(enemy)
+		# self.enemies.append(enemy)
 
 
 '''Game creating'''
@@ -566,7 +591,79 @@ FPS = 60
 game = Game(WINDOW_WIDTH, WINDOW_HEIGHT, fps=FPS, backgroundImagePath='assets/images/background_stars.png')
 
 
+'''Difficulties Setting'''
+DIFFICULTIES = {
+	"easy": {
+     
+		# Game Settings
+		"gameSpeed": 1,
+		"scoreMultipler": 1.0,
+     
+		# Player Settings
+		"jumpCount": 10,
+		"jumpSegment": 0.065,
+     
+		# Enemies and Obstacles Settings
+  		"maximumEnemiesCount": 5,
+  		"maximumFlyingEnemiesCount": 1,
+		"spawnRate": 1,
+		"spawningSpeed": [1000, 1500],
+  		"spawningSpeedFlyingEnemies": [5000,7500],
+		"maximumObstaclesCount": 1,
+		
+  		# Projectile Settings
+    	"projectileDelay": 700
+     
+	},
+	"medium": {
+
+		# Game Settings
+		"gameSpeed": 1.5,
+		"scoreMultipler": 1.75,
+     
+		# Player Settings
+		"jumpCount": 10,
+		"jumpSegment": 0.065,
+     
+		# Enemies and Obstacles Settings
+  		"maximumEnemiesCount": 10,
+  		"maximumFlyingEnemiesCount": 2,
+		"spawnRate": 1,
+		"spawningSpeed": [700, 1200],
+  		"spawningSpeedFlyingEnemies": [4000,6000],
+		"maximumObstaclesCount": 1, # TODO: Zmeniť adekvátne!
+		
+  		# Projectile Settings
+    	"projectileDelay": 400
+  
+	},
+	"doom": {
+
+		# Game Settings
+		"gameSpeed": 2.5,
+		"scoreMultipler": 3,
+     
+		# Player Settings
+		"jumpCount": 10,
+		"jumpSegment": 0.065,
+     
+		# Enemies and Obstacles Settings
+  		"maximumEnemiesCount": 15,
+		"spawnRate": 1,
+		"spawningSpeed": [500, 1000],
+  		"spawningSpeedFlyingEnemies": [2000,4000],
+		"maximumObstaclesCount": 1, # TODO: Zmeniť adekvátne!
+		
+  		# Projectile Settings
+    	"projectileDelay": 200
+  
+	}
+	
+}
+
 '''Main event loop'''
+previous_time = pygame.time.get_ticks()
+previous_time_enemies = pygame.time.get_ticks()
 while game.RUNNING:
 	# Processing events
 	for event in pygame.event.get():
@@ -586,9 +683,20 @@ while game.RUNNING:
 					if event.key == pygame.K_SPACE:
 						print('space was pressed')
 						game.jumpPlayer()
+      
 					# Player shoots when the "e" key is pressed
 					if event.key == pygame.K_e:
-						game.playerShootProjectile()
+						current_time = pygame.time.get_ticks()
+						if current_time - previous_time > 700:
+							previous_time = current_time
+							game.playerShootProjectile()
+       
+					if game.getEnemiesCount() < 5:
+						current_time = pygame.time.get_ticks()
+						print("Current enemies: {}".format(game.getEnemiesCount()))
+						if current_time - previous_time_enemies > random.randint(500,1000):
+							previous_time_enemies = current_time
+							game.enemySpawn()
 
 		# Checks if the game is about to be quitted
 		if event.type == pygame.QUIT:
