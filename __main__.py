@@ -62,24 +62,6 @@ game = Game(WINDOW_WIDTH, WINDOW_HEIGHT, fps=FPS, backgroundImagePath='assets/im
 DIFFICULTIES = {
 	"easy": {
      
-		# Game Settings
-		"gameSpeed": 1,
-		"scoreMultipler": 1.0,
-     
-		# Player Settings
-		"jumpCount": 10,
-		"jumpSegment": 0.065,
-     
-		# Enemies and Obstacles Settings
-  		"maximumEnemiesCount": 5,
-  		"maximumFlyingEnemiesCount": 1,
-		"spawnRate": 1,
-		"spawningSpeed": [1000, 1500],
-  		"spawningSpeedFlyingEnemies": [5000,7500],
-		"maximumObstaclesCount": 1,
-		
-  		# Projectile Settings
-    	"projectileDelay": 700
      
 	},
 	"medium": {
@@ -104,27 +86,7 @@ DIFFICULTIES = {
     	"projectileDelay": 400
   
 	},
-	"doom": {
-
-		# Game Settings
-		"gameSpeed": 2.5,
-		"scoreMultipler": 3,
-     
-		# Player Settings
-		"jumpCount": 10,
-		"jumpSegment": 0.065,
-     
-		# Enemies and Obstacles Settings
-  		"maximumEnemiesCount": 15,
-		"spawnRate": 1,
-		"spawningSpeed": [500, 1000],
-  		"spawningSpeedFlyingEnemies": [2000,4000],
-		"maximumObstaclesCount": 1, # TODO: Zmeniť adekvátne!
-		
-  		# Projectile Settings
-    	"projectileDelay": 200
-  
-	}
+	
 	
 }
 
@@ -154,7 +116,7 @@ while game.RUNNING:
 					# Player shoots when the "e" key is pressed
 					if event.key == pygame.K_e:
 						current_time = pygame.time.get_ticks()
-						if current_time - previous_time > 700:
+						if current_time - previous_time > game.getPlayerAttackSpeed():
 							previous_time = current_time
 							game.playerShootProjectile()
        
