@@ -89,7 +89,7 @@ class DificultyScene(Scene):
     
     def initialize(self) -> None:
         fontSizePixel = 30
-        self.difficulty = Text("Select difficultyTEXT", 50)
+        self.difficulty = Text("Select difficulty", 50)
         self.difficulty.changePosition((self.game.windowWidth//2 - self.difficulty.width//2, 1 * self.difficulty.fontSizePixel))
 
         self.difficultyEasy = Text("Easy", fontSizePixel)
