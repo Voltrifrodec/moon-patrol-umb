@@ -55,9 +55,9 @@ class MainMenu(Scene):
 	def initialize(self):
 		fontSize = 50
 		self.play = Text('PLAY', fontSize)
-		self.play.changePosition((self.game.windowWidth//2 - self.play.width//2, 1.5 * self.play.fontSizePixel))
+		self.play.changePosition((self.game.windowWidth//2 - self.play.width//2, 1/4*self.game.windowHeight - self.play.fontSizePixel))
 		self.quit = Text('QUIT', fontSize)
-		self.quit.changePosition((self.game.windowWidth//2 - self.play.width//2, 4 * self.quit.fontSizePixel))
+		self.quit.changePosition((self.game.windowWidth//2 - self.play.width//2, 3/4*self.game.windowHeight - self.play.fontSizePixel))
 	
 	# Draws scene
 	def draw(self) -> None:
