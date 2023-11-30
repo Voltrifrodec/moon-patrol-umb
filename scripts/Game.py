@@ -31,7 +31,7 @@ class Game():
 		pygame.init()
 		self.clock = pygame.time.Clock()
 		self.surface = pygame.display.set_mode((self.windowWidth, self.windowHeight))
-		self.setCaption('Moon Patrol v1.0 - FPV UMB')
+		self.setCaption('Moon Patrol v2.0.0 - FPV UMB')
 		self.score = 0
 		self.initializeObjects()
 		self.scene = Scene(self)
