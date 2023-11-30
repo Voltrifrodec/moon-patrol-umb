@@ -1,15 +1,11 @@
 '''Imports'''
 # sys module
 import sys
-from time import sleep
 # PyGame module
 import pygame
 # Random module
 import random
 
-import numpy as np
-
-from enum import Enum
 
 '''Project Imports'''
 # from scripts.Text import Text as Text
@@ -26,30 +22,6 @@ BLACK = pygame.Color('black')
 YELLOW = pygame.Color('yellow')
 ENEMY_WIDTH = 48
 
-'''Class declarations'''
-# class Game(): ...
-# # class Scene(): ...
-# class MainMenu(): ...
-# class InGame(): ...
-# class Pause(): ...
-# class End(): ...
-# class Text(): ...
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 '''Game creating'''
 WINDOW_WIDTH = 800
@@ -57,38 +29,6 @@ WINDOW_HEIGHT = 600
 FPS = 60
 game = Game(WINDOW_WIDTH, WINDOW_HEIGHT, fps=FPS, backgroundImagePath='assets/images/background_stars.png')
 
-
-'''Difficulties Setting'''
-DIFFICULTIES = {
-	"easy": {
-     
-     
-	},
-	"medium": {
-
-		# Game Settings
-		"gameSpeed": 1.5,
-		"scoreMultipler": 1.75,
-     
-		# Player Settings
-		"jumpCount": 10,
-		"jumpSegment": 0.065,
-     
-		# Enemies and Obstacles Settings
-  		"maximumEnemiesCount": 10,
-  		"maximumFlyingEnemiesCount": 2,
-		"spawnRate": 1,
-		"spawningSpeed": [700, 1200],
-  		"spawningSpeedFlyingEnemies": [4000,6000],
-		"maximumObstaclesCount": 1, # TODO: Zmeniť adekvátne!
-		
-  		# Projectile Settings
-    	"projectileDelay": 400
-  
-	},
-	
-	
-}
 
 '''Main event loop'''
 previous_time = pygame.time.get_ticks()
