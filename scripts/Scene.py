@@ -82,17 +82,26 @@ class DificultyScene(Scene):
 		self.name = 'Select difficulty'
 	
 	def initialize(self) -> None:
-		fontSizePixel = 30
-		self.difficulty = Text("Select difficulty", 50)
+		fontSizePixel = 40
+		self.difficulty = Text("Select difficulty", 30)
 		self.difficulty.changePosition((self.game.windowWidth//2 - self.difficulty.width//2, 1 * self.difficulty.fontSizePixel))
 
 		self.difficultyEasy = Text("Easy", fontSizePixel)
 		self.difficultyMedium = Text("Medium", fontSizePixel)
 		self.difficultyHard = Text("Doom Eternal", fontSizePixel)
 
-		self.difficultyEasy.changePosition((50 + self.difficultyEasy.width, self.game.windowHeight - 6 * self.difficultyEasy.fontSizePixel))
-		self.difficultyMedium.changePosition((self.game.windowWidth//2 - self.difficultyMedium.width//2, self.game.windowHeight - 6 * self.difficultyMedium.fontSizePixel))
-		self.difficultyHard.changePosition((self.game.windowWidth - self.difficultyHard.width - 50, self.game.windowHeight - 6 * self.difficultyHard.fontSizePixel))
+		goBackButtonFontSizePixel = 20
+		self.goBackButton = Text("Return to main menu", goBackButtonFontSizePixel)
+		goBackButtonPosition = (self.game.windowWidth//2 - self.goBackButton.width//2, \
+														self.game.windowHeight - self.goBackButton.height - 10)
+		self.goBackButton.changePosition(goBackButtonPosition)
+
+		self.difficultyEasy.changePosition((self.game.windowWidth//2 - self.difficultyEasy.width//2,
+																				1/4*self.game.windowHeight - self.difficultyEasy.fontSizePixel + 50))
+		self.difficultyMedium.changePosition((self.game.windowWidth//2 - self.difficultyMedium.width//2,
+																				2/4*self.game.windowHeight - self.difficultyMedium.fontSizePixel))
+		self.difficultyHard.changePosition((self.game.windowWidth//2 - self.difficultyHard.width//2,
+																				3/4*self.game.windowHeight - self.difficultyHard.fontSizePixel - 50))
 
 	def draw(self):
 		self.initialize()
@@ -101,6 +110,7 @@ class DificultyScene(Scene):
 		self.game.surface.blit(self.difficultyHard.rendered, self.difficultyHard.position)
 		self.game.surface.blit(self.difficultyMedium.rendered, self.difficultyMedium.position)
 		self.game.surface.blit(self.difficultyEasy.rendered, self.difficultyEasy.position)
+		self.game.surface.blit(self.goBackButton.rendered, self.goBackButton.position)
 		
 	def update(self, x:int, y:int) -> None:
 		if self.difficultyEasy.doesCollide(x,y):
@@ -112,6 +122,8 @@ class DificultyScene(Scene):
 		if self.difficultyHard.doesCollide(x, y):
 			self.game.setDifficulty(Difficulty.DOOM_ETERNAL)
 			self.game.scene.changeTo(self.game.scene.inGame)
+		if self.goBackButton.doesCollide(x, y):
+			self.game.scene.changeTo(self.game.scene.menu)
 		
 
 '''In game class'''
