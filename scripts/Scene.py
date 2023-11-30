@@ -53,10 +53,10 @@ class MainMenu(Scene):
 	
 	# Initializes scene
 	def initialize(self):
-		fontSize = 50
+		fontSize = 80
 		self.play = Text('PLAY', fontSize)
 		self.play.changePosition((self.game.windowWidth//2 - self.play.width//2, 1/4*self.game.windowHeight - self.play.fontSizePixel))
-		self.quit = Text('QUIT', fontSize)
+		self.quit = Text('EXIT', fontSize)
 		self.quit.changePosition((self.game.windowWidth//2 - self.play.width//2, 3/4*self.game.windowHeight - self.play.fontSizePixel))
 	
 	# Draws scene
@@ -83,7 +83,7 @@ class DificultyScene(Scene):
 	
 	def initialize(self) -> None:
 		fontSizePixel = 40
-		self.difficulty = Text("Select difficulty", 30)
+		self.difficulty = Text("Select difficulty", 35)
 		self.difficulty.changePosition((self.game.windowWidth//2 - self.difficulty.width//2, 1 * self.difficulty.fontSizePixel))
 
 		self.difficultyEasy = Text("Easy", fontSizePixel)
