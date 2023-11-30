@@ -2,6 +2,7 @@ import pygame
 from scripts.GameObject import GameObject
 from scripts.Projectile import Projectile
 
+
 '''Player class'''
 class Player(GameObject):
 	def __init__(self, positionX, positionY, color: pygame.Color = None, imagePath: str = None, screen=None, projectileSpeed=10, width=48, height=28) -> None:

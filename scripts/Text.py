@@ -3,6 +3,7 @@ import pygame
 WHITE = pygame.Color('white')
 BLACK = pygame.Color('black')
 
+
 '''Text class'''
 class Text():
 	def __init__(self, text:str, fontSizePixel:int, position:tuple[int,int]=(0,0), font:str='unispace bd.ttf', antialias:bool=True, textColor=WHITE) -> None:

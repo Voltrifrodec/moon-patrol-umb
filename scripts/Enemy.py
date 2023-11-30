@@ -6,6 +6,7 @@ BLACK = pygame.Color('black')
 global ENEMY_WIDTH
 ENEMY_WIDTH = 48
 
+
 '''Enemy class'''
 class Enemy(GameObject):
 	def __init__(self, positionX:int=0, positionY:int=0, width:int=100, height:int=25, color: pygame.Color = BLACK, imagePath: str = 'assets/images/Enemy Land.png', surface:pygame.Surface=None, speed:int=10) -> None:

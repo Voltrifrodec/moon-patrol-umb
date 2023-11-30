@@ -1,7 +1,7 @@
 import pygame
 
-
 BLACK = pygame.Color('black')
+
 
 '''Game object class'''
 class GameObject():

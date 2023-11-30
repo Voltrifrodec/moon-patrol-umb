@@ -2,10 +2,7 @@ import pygame
 from scripts.GameObject import GameObject
 from scripts.Direction import Direction
 
-
 YELLOW = pygame.Color('yellow')
-
-
 
 
 '''Projectile class'''
