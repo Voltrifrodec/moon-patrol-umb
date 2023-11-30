@@ -6,6 +6,7 @@ from scripts.Player import Player
 from scripts.Obstacle import Obstacle
 from scripts.Projectile import Projectile
 from scripts.Difficulty import Difficulty
+import math
 
 WINDOW_WIDTH=800
 WINDOW_HEIGHT=600
@@ -63,8 +64,9 @@ class Game():
     def addPlayers(self):
         self.addObject(Player(0, self.calculateGroundSurfaceY() + 5, None, './assets/images/player2.png', self.surface, 20, 48, 24))
         self.addObject(Obstacle(self.surface.get_width(), self.calculateGroundSurfaceY() + 28, 100, 100, None, './assets/images/ravine3.png', self.surface, 8))
-        for iteration in range(self.difficulty.value["spawnRate"]):
-            self.addObject(Enemy(self.surface.get_width(), self.calculateGroundSurfaceY(), ENEMY_WIDTH, 24, None, ('assets/images/Enemy Land_{}.png'.format(random.randint(1,2))), self.surface, self.difficulty.value["enemySpeed"]))
+        self.addObject(Enemy(self.surface.get_width(), self.calculateGroundSurfaceY(), ENEMY_WIDTH, 24, None, (f'assets/images/Enemy Land_{random.randint(1,4)}.png'), self.surface, self.difficulty.value["enemySpeed"]))
+        # for iteration in range(self.difficulty.value["spawnRate"]):
+        #     print(f'Creating {self.difficulty.value["spawnRate"]} enemies...')
 
     def calculateGroundSurfaceY(self):
         return self.surface.get_height() - self.groundSurfacePositionY
@@ -98,6 +100,7 @@ class Game():
                 isOutOfScreen = obj.isOutOfScreen()
                 if (isOutOfScreen):
                     obj.resetPosition()
+                    self.score += math.ceil(1 * self.difficulty.value["scoreMultipler"]) 
                 else:
                     obj.move()
             # Projectiles
@@ -112,6 +115,7 @@ class Game():
                 isOutOfScreen = obj.isOutOfScreen()
                 if (isOutOfScreen):
                     obj.resetPosition()
+                    self.score += math.ceil(1 * self.difficulty.value["scoreMultipler"]) 
                 else:
                     obj.move()
 
@@ -140,7 +144,7 @@ class Game():
                         self.deleteObject(enemy)
                         self.enemies.remove(enemy)
                         self.deleteObject(projectile)
-                        self.score += 1
+                        self.score += math.ceil(1 * self.difficulty.value["scoreMultipler"])
                         return
     
     # Draws all the objects
@@ -210,8 +214,12 @@ class Game():
         return self.difficulty.value["attackSpeed"]
   
     def enemySpawn(self):
-        enemy = Enemy(self.surface.get_width(), self.calculateGroundSurfaceY(), ENEMY_WIDTH, 24, None, ('assets/images/Enemy Land_{}.png'.format(random.randint(1,4))), self.surface, self.difficulty.value["enemySpeed"])
-        self.addObject(enemy)
+        for iteration in range(0, self.difficulty.value["spawnRate"]):
+            print(f'Creating {self.difficulty.value["spawnRate"]} enemies...')
+            enemy = Enemy(self.surface.get_width() + iteration * random.randint(50,100), self.calculateGroundSurfaceY(), ENEMY_WIDTH, 24, None, ('assets/images/Enemy Land_{}.png'.format(random.randint(1,4))), self.surface, self.difficulty.value["enemySpeed"])
+            self.addObject(enemy)
+            # self.addObject(Enemy(self.surface.get_width() + iteration * random.randint(0,100), self.calculateGroundSurfaceY(), ENEMY_WIDTH, 24, None, ('assets/images/Enemy Land_{}.png'.format(random.randint(1,2))), self.surface, self.difficulty.value["enemySpeed"]))
+
         # self.enemies.append(enemy)
         
     def setDifficulty(self, difficulty=Difficulty) -> None:

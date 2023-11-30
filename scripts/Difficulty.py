@@ -65,7 +65,7 @@ class Difficulty(Enum):
   		"maximumEnemiesCount": 15,
   		"maximumFlyingEnemiesCount": 5,
         "enemySpeed": 17,
-		"spawnRate": 2,
+		"spawnRate": 4,
 		"spawningSpeed": [500, 1000],
   		"spawningSpeedFlyingEnemies": [2000,4000],
 		"maximumObstaclesCount": 1, # TODO: Zmeniť adekvátne!

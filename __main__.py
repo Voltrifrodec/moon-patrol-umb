@@ -120,7 +120,7 @@ while game.RUNNING:
 							previous_time = current_time
 							game.playerShootProjectile()
        
-					if game.getEnemiesCount() < 5:
+					if game.getEnemiesCount() < game.difficulty.value["maximumEnemiesCount"]:
 						current_time = pygame.time.get_ticks()
 						print("Current enemies: {}".format(game.getEnemiesCount()))
 						if current_time - previous_time_enemies > random.randint(500,1000):
